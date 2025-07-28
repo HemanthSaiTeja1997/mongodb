@@ -34,6 +34,7 @@ getUserById = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Invalid user " });
+    next(error);
   }
 };
 
@@ -48,6 +49,7 @@ updateById = async (req, res) => {
     res.status(200).json({ message: "User Update", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: "update failed", error: error.message });
+    next(error);
   }
 };
 
@@ -61,6 +63,7 @@ deleteById = async (req, res) => {
     res.status(200).json({ message: "User Deleted" });
   } catch (error) {
     res.status(400).json({ message: "Failed to Delete", err: error.message });
+    next(error);
   }
 };
 
