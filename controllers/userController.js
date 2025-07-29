@@ -1,15 +1,16 @@
 const User = require("../models/userModel");
+const STATUS=require('../utils/constant');
 
-register = async (req, res) => {
+registerUser = async (req, res) => {
   const { username, email, password } = req.body;
   try {
     const user = new User({ username, email, password });
     await user.save();
     res
-      .status(200)
-      .json({ success: true, message: "User Registered Successfully" });
+      .status(STATUS.CREATED)
+      .json({ success: true, message: STATUS.MSG_USER_CREATED });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(STATUS.INTERNAL_SERVER_ERROR).json({ success: false, error: error.message });
     next(error);
   }
 };
@@ -17,9 +18,8 @@ register = async (req, res) => {
 getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    res.status(200).json(users);
+    res.status(STATUS.SUCCESS).json(users);
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error " });
     next(error);
   }
 };
@@ -29,11 +29,10 @@ getUserById = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(400).json({ success: false, message: "User Not Found" });
+      res.status(STATUS.NOT_FOUND).json({ success: false, message:STATUS.MSG_USER_NOT_FOUND });
     }
-    res.status(200).json(user);
+    res.status(STATUS.SUCCESS).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Invalid user " });
     next(error);
   }
 };
@@ -44,11 +43,10 @@ updateById = async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(id, { username, email });
     if (!updatedUser) {
-      res.status(404).json({ message: "User Not Found" });
+      res.status(STATUS.NOT_FOUND).json({ message:STATUS.MSG_USER_NOT_FOUND });
     }
-    res.status(200).json({ message: "User Update", user: updatedUser });
+    res.status(STATUS.SUCCESS).json({ message: STATUS.MSG_USER_UPDATED, user: updatedUser });
   } catch (error) {
-    res.status(400).json({ message: "update failed", error: error.message });
     next(error);
   }
 };
@@ -58,17 +56,16 @@ deleteById = async (req, res) => {
   try {
     const deleteuser = await User.findByIdAndDelete(id);
     if (!deleteuser) {
-      res.status(404).json({ message: "User Not Found" });
+      res.status(STATUS.NOT_FOUND).json({ message: STATUS.MSG_USER_NOT_FOUND });
     }
-    res.status(200).json({ message: "User Deleted" });
+    res.status(STATUS.SUCCESS).json({ message: STATUS.MSG_USER_DELETED });
   } catch (error) {
-    res.status(400).json({ message: "Failed to Delete", err: error.message });
     next(error);
   }
 };
 
 module.exports = {
-  REGISTER: register,
+  REGISTER: registerUser,
   GETALL: getAllUsers,
   DELETEUSER: deleteById,
   UPDATEUSER: updateById,
